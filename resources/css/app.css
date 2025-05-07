@@ -1,0 +1,8 @@
+.toast-top-right {
+    top: 63px !important;
+    right: 12px;
+    z-index: 1060; /* acima do navbar padrão do Bootstrap */
+}
+.modal-dialog {
+    margin-top: 65px !important;
+}

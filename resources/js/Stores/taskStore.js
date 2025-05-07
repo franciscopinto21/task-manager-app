@@ -6,35 +6,73 @@ export const useTaskStore = defineStore("tasks", {
         tasks: [],
         loading: false,
         error: null,
+        pagination: {},
     }),
 
     actions: {
-        async fetchTasks() {
+        async fetchTasks(filters = {}) {
             this.loading = true;
             try {
-                const response = await axios.get("/api/tasks");
+                const response = await axios.get("/api/tasks", {
+                    params: filters,
+                });
+
                 this.tasks = response.data.data;
+
+                this.pagination = {
+                    ...response.data.meta,
+                    links: response.data.meta.links,
+                };
             } catch (e) {
-                this.error = "Failed to fetch tasks";
+                console.error("Failed to fetch tasks:", e);
+                this.error = "Failed to fetch tasks.";
             } finally {
                 this.loading = false;
             }
         },
 
-        async addTask(task) {
-            const response = await axios.post("/api/tasks", task);
-            this.tasks.unshift(response.data.data);
+        async addTask(data) {
+            try {
+                const response = await axios.post("/api/tasks", data);
+                this.tasks.unshift(response.data.data);
+            } catch (error) {
+                this.error = "Failed to create task.";
+            }
         },
 
-        async updateTask(id, updatedData) {
-            const response = await axios.put(`/api/tasks/${id}`, updatedData);
-            const index = this.tasks.findIndex((t) => t.id === id);
-            if (index !== -1) this.tasks[index] = response.data.data;
+        async updateTask(id, data) {
+            try {
+                const response = await axios.put(`/api/tasks/${id}`, data);
+                const index = this.tasks.findIndex((task) => task.id === id);
+                if (index !== -1) {
+                    this.tasks[index] = response.data.data;
+                }
+            } catch (error) {
+                this.error = "Failed to update task.";
+            }
+        },
+
+        async toggleDone(id) {
+            try {
+                const response = await axios.patch(
+                    `/api/tasks/${id}/toggle-done`
+                );
+                const index = this.tasks.findIndex((t) => t.id === id);
+                if (index !== -1) {
+                    this.tasks[index] = response.data.data;
+                }
+            } catch (e) {
+                this.error = "Failed to toggle task status.";
+            }
         },
 
         async deleteTask(id) {
-            await axios.delete(`/api/tasks/${id}`);
-            this.tasks = this.tasks.filter((t) => t.id !== id);
+            try {
+                await axios.delete(`/api/tasks/${id}`);
+                this.tasks = this.tasks.filter((task) => task.id !== id);
+            } catch (error) {
+                this.error = "Failed to delete task.";
+            }
         },
     },
 });

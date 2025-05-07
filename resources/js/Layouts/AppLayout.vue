@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div class="d-flex flex-column min-vh-100">
         <HeaderComponent />
 
-        <main class="container py-4">
+        <main class="container py-4 flex-grow-1">
             <slot />
         </main>
 
