@@ -4,7 +4,7 @@
             <!-- Sidebar -->
             <div class="col-md-3">
                 <!-- Filters -->
-                <div class="border-top pt-3">
+                <div>
                     <h5>Filters</h5>
 
                     <div class="row">
@@ -99,6 +99,21 @@
                         {{ isEditing ? "Update Task" : "Add Task" }}
                     </button>
                 </form>
+                <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                >
+                    <button
+                        class="btn btn-outline-secondary btn-sm"
+                        @click="generateTasks"
+                        :disabled="loading"
+                    >
+                        <span
+                            v-if="loading"
+                            class="spinner-border spinner-border-sm me-1"
+                        ></span>
+                        Generate Dummy Tasks
+                    </button>
+                </div>
             </div>
 
             <!-- Main content -->
@@ -294,8 +309,7 @@ const applyFilters = () => {
                 : undefined,
     };
 
-    delete payload.status; // não envia o campo original
-
+    delete payload.status;
     store.fetchTasks(payload);
 };
 
@@ -318,6 +332,19 @@ const handleSubmit = async () => {
         applyFilters();
     } catch (e) {
         toastr.error("Error saving task");
+    } finally {
+        loading.value = false;
+    }
+};
+
+const generateTasks = async () => {
+    loading.value = true;
+    try {
+        await store.generateDummyTasks();
+        toastr.success("Dummy tasks created");
+        applyFilters();
+    } catch (e) {
+        toastr.error("Error generating tasks");
     } finally {
         loading.value = false;
     }
@@ -377,7 +404,7 @@ const toggleDone = async (task) => {
 const goToPage = (url) => {
     const urlObj = new URL(url);
     filters.page = urlObj.searchParams.get("page");
-    applyFilters(); // Isso faz o fetchTasks rodar com a nova página
+    applyFilters();
 };
 
 const formatLabel = (label) => {

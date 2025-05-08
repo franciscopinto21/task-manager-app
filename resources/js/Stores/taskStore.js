@@ -74,5 +74,15 @@ export const useTaskStore = defineStore("tasks", {
                 this.error = "Failed to delete task.";
             }
         },
+        async generateDummyTasks() {
+            this.loading = true;
+            try {
+                await axios.post("/api/tasks/generate");
+            } catch (e) {
+                this.error = "Failed to generate dummy tasks.";
+            } finally {
+                this.loading = false;
+            }
+        },
     },
 });

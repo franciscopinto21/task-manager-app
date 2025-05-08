@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('tasks', TaskController::class);
 Route::patch('/tasks/{task}/toggle-done', [TaskController::class, 'toggleDone']);
+Route::post('/tasks/generate', [TaskController::class, 'generateDummy']);

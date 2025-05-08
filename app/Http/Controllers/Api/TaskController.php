@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use App\Http\Resources\TaskResource;
+use Illuminate\Support\Str;
 
 class TaskController extends Controller
 {
@@ -65,6 +66,14 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
+
+    public function generateDummy()
+    {
+        Task::factory()->count(5)->create();
+    
+        return response()->json(['message' => 'Dummy tasks created.']);
+    }
+
     /**
      * Display the specified resource.
      */
@@ -105,6 +114,6 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        return response()->json(['message' => 'Deleted successfully.']);
+        return response()->noContent();
     }
 }
